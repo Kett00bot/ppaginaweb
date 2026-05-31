@@ -28,16 +28,28 @@
 
     <button onclick="pasarLista()">Pasar Lista</button>
 
-    <!-- NUEVO: BOTÓN ROJO -->
+    <!-- BOTÓN ROJO -->
     <button class="btnEliminar" onclick="limpiarLista()">
       Limpiar Lista
     </button>
+
+
+    <!-- NUEVO: CONTADOR -->
+    <h3 id="contador">
+      Alumnos presentes: 0
+    </h3>
+
 
     <ul id="listaAlumnos"></ul>
 
   </div>
 
   <script>
+
+    // NUEVO: VARIABLE CONTADOR
+
+    let contadorAlumnos = 0;
+
 
     function pasarLista() {
 
@@ -53,7 +65,7 @@
       let nuevoAlumno = document.createElement("li");
 
 
-      // NUEVO: OBTENER FECHA Y HORA
+      // OBTENER FECHA Y HORA
 
       let fecha = new Date();
 
@@ -64,7 +76,7 @@
       fecha.toLocaleTimeString();
 
 
-      // NUEVO: MOSTRAR FECHA Y HORA
+      // MOSTRAR FECHA Y HORA
 
       nuevoAlumno.textContent =
       "✔ " + nombre +
@@ -74,17 +86,40 @@
 
       lista.appendChild(nuevoAlumno);
 
+
+      // NUEVO: AUMENTAR CONTADOR
+
+      contadorAlumnos++;
+
+
+      // NUEVO: ACTUALIZAR TEXTO
+
+      document.getElementById("contador").textContent =
+      "Alumnos presentes: " + contadorAlumnos;
+
+
       document.getElementById("nombreAlumno").value = "";
     }
 
 
-    <!-- NUEVO: FUNCIÓN PARA LIMPIAR LISTA -->
+    // FUNCIÓN PARA LIMPIAR LISTA
 
     function limpiarLista(){
 
       let lista = document.getElementById("listaAlumnos");
 
       lista.innerHTML = "";
+
+
+      // NUEVO: REINICIAR CONTADOR
+
+      contadorAlumnos = 0;
+
+
+      // NUEVO: ACTUALIZAR CONTADOR
+
+      document.getElementById("contador").textContent =
+      "Alumnos presentes: 0";
 
     }
 
