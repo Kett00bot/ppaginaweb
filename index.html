@@ -1,0 +1,46 @@
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pase de Lista</title>
+
+  <!-- Conexión al archivo CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="contenedor">
+    <h1>Bienvenido</h1>
+    <h2>Clase: Base de Datos</h2>
+
+    <input type="text" id="nombreAlumno" placeholder="Ingresa tu nombre">
+
+    <br>
+
+    <button onclick="pasarLista()">Pasar Lista</button>
+
+    <ul id="listaAlumnos"></ul>
+  </div>
+
+  <script>
+    function pasarLista() {
+      let nombre = document.getElementById("nombreAlumno").value;
+
+      if(nombre.trim() === ""){
+        alert("Por favor escribe tu nombre");
+        return;
+      }
+
+      let lista = document.getElementById("listaAlumnos");
+
+      let nuevoAlumno = document.createElement("li");
+      nuevoAlumno.textContent = nombre + " - Presente";
+
+      lista.appendChild(nuevoAlumno);
+
+      document.getElementById("nombreAlumno").value = "";
+    }
+  </script>
+
+</body>
+</html>
