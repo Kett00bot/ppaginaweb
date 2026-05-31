@@ -92,6 +92,20 @@ button:hover{
   background: #003f88;
 }
 
+/* NUEVO: BOTÓN ROJO */
+
+.btnEliminar{
+
+  background: #d62828;
+
+  margin-left: 10px;
+}
+
+.btnEliminar:hover{
+
+  background: #a4161a;
+}
+
 ul{
   margin-top: 20px;
   text-align: left;

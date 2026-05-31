@@ -28,11 +28,17 @@
 
     <button onclick="pasarLista()">Pasar Lista</button>
 
+    <!-- NUEVO: BOTÓN ROJO -->
+    <button class="btnEliminar" onclick="limpiarLista()">
+      Limpiar Lista
+    </button>
+
     <ul id="listaAlumnos"></ul>
 
   </div>
 
   <script>
+
     function pasarLista() {
 
       let nombre = document.getElementById("nombreAlumno").value;
@@ -52,6 +58,17 @@
 
       document.getElementById("nombreAlumno").value = "";
     }
+
+    <!-- NUEVO: FUNCIÓN PARA LIMPIAR LISTA -->
+
+    function limpiarLista(){
+
+      let lista = document.getElementById("listaAlumnos");
+
+      lista.innerHTML = "";
+
+    }
+
   </script>
 
 </body>
