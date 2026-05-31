@@ -52,12 +52,31 @@
 
       let nuevoAlumno = document.createElement("li");
 
-      nuevoAlumno.textContent = nombre + " - Presente";
+
+      // NUEVO: OBTENER FECHA Y HORA
+
+      let fecha = new Date();
+
+      let fechaActual =
+      fecha.toLocaleDateString();
+
+      let horaActual =
+      fecha.toLocaleTimeString();
+
+
+      // NUEVO: MOSTRAR FECHA Y HORA
+
+      nuevoAlumno.textContent =
+      "✔ " + nombre +
+      " | " + fechaActual +
+      " | " + horaActual;
+
 
       lista.appendChild(nuevoAlumno);
 
       document.getElementById("nombreAlumno").value = "";
     }
+
 
     <!-- NUEVO: FUNCIÓN PARA LIMPIAR LISTA -->
 
