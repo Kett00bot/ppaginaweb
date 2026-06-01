@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pase de Lista</title>
 
-  <!-- CONEXIÓN AL CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="contenedor">
 
-    <!-- LOGOS -->
     <div class="logos">
       <img src="logouaem.png" alt="Logo UAEM">
       <img src="logofcaei.png" alt="Logo FCAeI">
@@ -26,22 +24,16 @@
 
     <h3>Materia: INTRODUCCION A LA INVESTIGACION</h3>
 
-    <!-- NUEVO CAMPO DE MATRÍCULA -->
     <input type="text" id="matriculaAlumno" placeholder="Ingresa tu matrícula">
-
     <input type="text" id="nombreAlumno" placeholder="Ingresa tu nombre">
 
     <button onclick="pasarLista()">Pasar Lista</button>
 
-    <!-- BOTÓN LIMPIAR -->
     <button class="btnEliminar" onclick="limpiarLista()">
       Limpiar Lista
     </button>
 
-    <!-- CONTADOR -->
-    <h3 id="contador">
-      Alumnos presentes: 0
-    </h3>
+    <h3 id="contador">Alumnos presentes: 0</h3>
 
     <ul id="listaAlumnos"></ul>
 
@@ -56,55 +48,59 @@
       let matricula = document.getElementById("matriculaAlumno").value;
       let nombre = document.getElementById("nombreAlumno").value;
 
-      if(matricula.trim() === ""){
+      if (matricula.trim() === "") {
         alert("Por favor escribe tu matrícula");
         return;
       }
 
-      if(nombre.trim() === ""){
+      if (nombre.trim() === "") {
         alert("Por favor escribe tu nombre");
         return;
       }
 
       let lista = document.getElementById("listaAlumnos");
-
       let nuevoAlumno = document.createElement("li");
 
       let fecha = new Date();
-
       let fechaActual = fecha.toLocaleDateString();
-
       let horaActual = fecha.toLocaleTimeString();
 
-      nuevoAlumno.textContent =
-      "✔ Matrícula: " + matricula +
-      " | Nombre: " + nombre +
-      " | INTRODUCCION A LA INVESTIGACION" +
-      " | Kevin Alquicira Hernandez" +
-      " | " + fechaActual +
-      " | " + horaActual;
+      // SOLO FECHA Y HORA
+      let texto = fechaActual + " | " + horaActual;
+
+      nuevoAlumno.textContent = texto;
+
+      // BOTÓN ELIMINAR
+      let btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "Eliminar";
+      btnEliminar.style.marginLeft = "10px";
+
+      btnEliminar.onclick = function () {
+        lista.removeChild(nuevoAlumno);
+        contadorAlumnos--;
+        document.getElementById("contador").textContent =
+          "Alumnos presentes: " + contadorAlumnos;
+      };
+
+      nuevoAlumno.appendChild(btnEliminar);
 
       lista.appendChild(nuevoAlumno);
 
       contadorAlumnos++;
 
       document.getElementById("contador").textContent =
-      "Alumnos presentes: " + contadorAlumnos;
+        "Alumnos presentes: " + contadorAlumnos;
 
       document.getElementById("matriculaAlumno").value = "";
       document.getElementById("nombreAlumno").value = "";
     }
 
-    function limpiarLista(){
-
-      let lista = document.getElementById("listaAlumnos");
-
-      lista.innerHTML = "";
-
+    function limpiarLista() {
+      document.getElementById("listaAlumnos").innerHTML = "";
       contadorAlumnos = 0;
 
       document.getElementById("contador").textContent =
-      "Alumnos presentes: 0";
+        "Alumnos presentes: 0";
     }
 
   </script>

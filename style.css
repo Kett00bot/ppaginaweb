@@ -3,10 +3,8 @@ body{
   padding: 0;
   font-family: Arial, sans-serif;
 
-  /* COLOR AZUL DEL FONDO */
   background: #004a99;
 
-  /* CENTRAR EL CUADRO */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,17 +13,11 @@ body{
 }
 
 .contenedor{
-
   background: #f2f2f2;
-
   width: 450px;
-
   padding: 30px;
-
   border-radius: 15px;
-
   text-align: center;
-
   box-shadow: 0px 4px 10px rgba(0,0,0,0.4);
 }
 
@@ -37,7 +29,6 @@ body{
   margin-bottom: 15px;
 }
 
-/* IMÁGENES */
 .logos img{
   width: 70px;
   height: auto;
@@ -61,30 +52,20 @@ h3{
 }
 
 input{
-
   width: 85%;
-
   padding: 10px;
-
   border-radius: 6px;
-
   border: 1px solid #ccc;
-
   margin-bottom: 15px;
 }
 
+/* BOTÓN PRINCIPAL */
 button{
-
   background: #005bbb;
-
   color: white;
-
   border: none;
-
   padding: 10px 20px;
-
   border-radius: 6px;
-
   cursor: pointer;
 }
 
@@ -92,20 +73,17 @@ button:hover{
   background: #003f88;
 }
 
-/* NUEVO: BOTÓN ROJO */
-
+/* BOTÓN ELIMINAR (ROJO) */
 .btnEliminar{
-
   background: #d62828;
-
   margin-left: 10px;
 }
 
 .btnEliminar:hover{
-
   background: #a4161a;
 }
 
+/* UL Y LI */
 ul{
   margin-top: 20px;
   text-align: left;
@@ -113,4 +91,7 @@ ul{
 
 li{
   margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
