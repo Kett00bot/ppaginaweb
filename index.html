@@ -12,7 +12,7 @@
 
   <div class="contenedor">
 
-    <!-- AQUÍ VAN LOS LOGOS -->
+    <!-- LOGOS -->
     <div class="logos">
       <img src="logouaem.png" alt="Logo UAEM">
       <img src="logofcaei.png" alt="Logo FCAeI">
@@ -22,23 +22,23 @@
 
     <h2>Facultad de Contabilidad, Administración e Informática</h2>
 
-    <h3>Clase: Base de Datos</h3>
+    <h3>Docente: Kevin Alquicira Hernandez</h3>
+
+    <h3>Materia: INTRODUCCION A LA INVESTIGACION</h3>
 
     <input type="text" id="nombreAlumno" placeholder="Ingresa tu nombre">
 
     <button onclick="pasarLista()">Pasar Lista</button>
 
-    <!-- BOTÓN ROJO -->
+    <!-- BOTÓN LIMPIAR -->
     <button class="btnEliminar" onclick="limpiarLista()">
       Limpiar Lista
     </button>
 
-
-    <!-- NUEVO: CONTADOR -->
+    <!-- CONTADOR -->
     <h3 id="contador">
       Alumnos presentes: 0
     </h3>
-
 
     <ul id="listaAlumnos"></ul>
 
@@ -46,10 +46,7 @@
 
   <script>
 
-    // NUEVO: VARIABLE CONTADOR
-
     let contadorAlumnos = 0;
-
 
     function pasarLista() {
 
@@ -64,45 +61,28 @@
 
       let nuevoAlumno = document.createElement("li");
 
-
-      // OBTENER FECHA Y HORA
-
       let fecha = new Date();
 
-      let fechaActual =
-      fecha.toLocaleDateString();
+      let fechaActual = fecha.toLocaleDateString();
 
-      let horaActual =
-      fecha.toLocaleTimeString();
-
-
-      // MOSTRAR FECHA Y HORA
+      let horaActual = fecha.toLocaleTimeString();
 
       nuevoAlumno.textContent =
       "✔ " + nombre +
+      " | INTRODUCCION A LA INVESTIGACION" +
+      " | Kevin Alquicira Hernandez" +
       " | " + fechaActual +
       " | " + horaActual;
 
-
       lista.appendChild(nuevoAlumno);
 
-
-      // NUEVO: AUMENTAR CONTADOR
-
       contadorAlumnos++;
-
-
-      // NUEVO: ACTUALIZAR TEXTO
 
       document.getElementById("contador").textContent =
       "Alumnos presentes: " + contadorAlumnos;
 
-
       document.getElementById("nombreAlumno").value = "";
     }
-
-
-    // FUNCIÓN PARA LIMPIAR LISTA
 
     function limpiarLista(){
 
@@ -110,17 +90,10 @@
 
       lista.innerHTML = "";
 
-
-      // NUEVO: REINICIAR CONTADOR
-
       contadorAlumnos = 0;
-
-
-      // NUEVO: ACTUALIZAR CONTADOR
 
       document.getElementById("contador").textContent =
       "Alumnos presentes: 0";
-
     }
 
   </script>
