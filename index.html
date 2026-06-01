@@ -26,6 +26,9 @@
 
     <h3>Materia: INTRODUCCION A LA INVESTIGACION</h3>
 
+    <!-- NUEVO CAMPO DE MATRÍCULA -->
+    <input type="text" id="matriculaAlumno" placeholder="Ingresa tu matrícula">
+
     <input type="text" id="nombreAlumno" placeholder="Ingresa tu nombre">
 
     <button onclick="pasarLista()">Pasar Lista</button>
@@ -50,7 +53,13 @@
 
     function pasarLista() {
 
+      let matricula = document.getElementById("matriculaAlumno").value;
       let nombre = document.getElementById("nombreAlumno").value;
+
+      if(matricula.trim() === ""){
+        alert("Por favor escribe tu matrícula");
+        return;
+      }
 
       if(nombre.trim() === ""){
         alert("Por favor escribe tu nombre");
@@ -68,7 +77,8 @@
       let horaActual = fecha.toLocaleTimeString();
 
       nuevoAlumno.textContent =
-      "✔ " + nombre +
+      "✔ Matrícula: " + matricula +
+      " | Nombre: " + nombre +
       " | INTRODUCCION A LA INVESTIGACION" +
       " | Kevin Alquicira Hernandez" +
       " | " + fechaActual +
@@ -81,6 +91,7 @@
       document.getElementById("contador").textContent =
       "Alumnos presentes: " + contadorAlumnos;
 
+      document.getElementById("matriculaAlumno").value = "";
       document.getElementById("nombreAlumno").value = "";
     }
 
