@@ -17,11 +17,9 @@
     </div>
 
     <h1>Universidad Autónoma del Estado de Morelos</h1>
-
     <h2>Facultad de Contabilidad, Administración e Informática</h2>
 
     <h3>Docente: Kevin Alquicira Hernandez</h3>
-
     <h3>Materia: INTRODUCCION A LA INVESTIGACION</h3>
 
     <input type="text" id="matriculaAlumno" placeholder="Ingresa tu matrícula">
@@ -29,7 +27,7 @@
 
     <button onclick="pasarLista()">Pasar Lista</button>
 
-    <button class="btnEliminar" onclick="limpiarLista()">
+    <button class="btnEliminarGeneral" onclick="limpiarLista()">
       Limpiar Lista
     </button>
 
@@ -65,15 +63,17 @@
       let fechaActual = fecha.toLocaleDateString();
       let horaActual = fecha.toLocaleTimeString();
 
-      // SOLO FECHA Y HORA
-      let texto = fechaActual + " | " + horaActual;
+      // SOLO DATOS QUE QUIERES
+      nuevoAlumno.innerHTML =
+        "Matrícula: " + matricula +
+        " | Nombre: " + nombre +
+        " | Fecha: " + fechaActual +
+        " | Hora: " + horaActual;
 
-      nuevoAlumno.textContent = texto;
-
-      // BOTÓN ELIMINAR
+      // BOTÓN ELIMINAR ROJO
       let btnEliminar = document.createElement("button");
       btnEliminar.textContent = "Eliminar";
-      btnEliminar.style.marginLeft = "10px";
+      btnEliminar.classList.add("btnEliminar");
 
       btnEliminar.onclick = function () {
         lista.removeChild(nuevoAlumno);
@@ -83,7 +83,6 @@
       };
 
       nuevoAlumno.appendChild(btnEliminar);
-
       lista.appendChild(nuevoAlumno);
 
       contadorAlumnos++;
