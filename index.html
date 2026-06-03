@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -6,63 +7,105 @@
   <title>Pase de Lista</title>
 
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
+    }
+
+    th, td{
+      border:1px solid #ccc;
+      padding:10px;
+      text-align:center;
+    }
+
+    th{
+      background-color:#0b4f8a;
+      color:white;
+    }
+
+    tr:nth-child(even){
+      background-color:#f5f5f5;
+    }
+  </style>
+
 </head>
 <body>
 
   <div class="contenedor">
 
-    <!-- ENCABEZADO -->
-    <div class="encabezado">
+```
+<!-- ENCABEZADO -->
+<div class="encabezado">
 
-      <img src="logouaem.png" alt="Logo UAEM" class="logo-izq">
+  <img src="logouaem.png" alt="Logo UAEM" class="logo-izq">
 
-      <div class="titulo">
-        <h1>Universidad Autónoma del Estado de Morelos</h1>
-        <h2>Facultad de Contabilidad, Administración e Informática</h2>
-      </div>
+  <div class="titulo">
+    <h1>Universidad Autónoma del Estado de Morelos</h1>
+    <h2>Facultad de Contabilidad, Administración e Informática</h2>
+  </div>
 
-      <img src="logofcaei.png" alt="Logo FCAeI" class="logo-der">
+  <img src="logofcaei.png" alt="Logo FCAeI" class="logo-der">
 
-    </div>
+</div>
 
-    <!-- INFORMACIÓN -->
-    <div class="info-materia">
-      <p><strong>Docente:</strong> Kevin Alquicira Hernandez</p>
-      <p><strong>Materia:</strong> INTRODUCCIÓN A LA INVESTIGACIÓN</p>
-    </div>
+<!-- INFORMACIÓN -->
+<div class="info-materia">
+  <p><strong>Docente:</strong> Kevin Alquicira Hernandez</p>
+  <p><strong>Materia:</strong> INTRODUCCIÓN A LA INVESTIGACIÓN</p>
+</div>
 
-    <!-- FORMULARIO -->
-    <input
-      type="text"
-      id="matriculaAlumno"
-      placeholder="Ingresa tu matrícula"
-    >
+<!-- FORMULARIO -->
+<input
+  type="text"
+  id="matriculaAlumno"
+  placeholder="Ingresa tu matrícula"
+>
 
-    <input
-      type="text"
-      id="nombreAlumno"
-      placeholder="Ingresa tu nombre"
-    >
+<input
+  type="text"
+  id="nombreAlumno"
+  placeholder="Ingresa tu nombre"
+>
 
-    <div class="botones">
+<div class="botones">
 
-      <button onclick="pasarLista()">
-        Pasar Lista
-      </button>
+  <button onclick="pasarLista()">
+    Pasar Lista
+  </button>
 
-      <button
-        class="btnEliminarGeneral"
-        onclick="limpiarLista()">
-        Limpiar Lista
-      </button>
+  <button
+    class="btnEliminarGeneral"
+    onclick="limpiarLista()">
+    Limpiar Lista
+  </button>
 
-    </div>
+</div>
 
-    <h3 id="contador">
-      Alumnos presentes: 0
-    </h3>
+<h3 id="contador">
+  Alumnos presentes: 0
+</h3>
 
-    <ul id="listaAlumnos"></ul>
+<!-- TABLA DE ASISTENCIA -->
+<table id="tablaAsistencia">
+
+  <thead>
+    <tr>
+      <th>Matrícula</th>
+      <th>Nombre</th>
+      <th>Fecha</th>
+      <th>Hora</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+
+  <tbody id="cuerpoTabla">
+  </tbody>
+
+</table>
+```
 
   </div>
 
@@ -88,11 +131,11 @@
         return;
       }
 
-      let lista =
-        document.getElementById("listaAlumnos");
+      let cuerpoTabla =
+        document.getElementById("cuerpoTabla");
 
-      let nuevoAlumno =
-        document.createElement("li");
+      let fila =
+        document.createElement("tr");
 
       let fecha = new Date();
 
@@ -102,13 +145,14 @@
       let horaActual =
         fecha.toLocaleTimeString();
 
-      nuevoAlumno.innerHTML =
-        "<span>" +
-        "<strong>Matrícula:</strong> " + matricula +
-        " | <strong>Nombre:</strong> " + nombre +
-        " | <strong>Fecha:</strong> " + fechaActual +
-        " | <strong>Hora:</strong> " + horaActual +
-        "</span>";
+      fila.innerHTML =
+        "<td>" + matricula + "</td>" +
+        "<td>" + nombre + "</td>" +
+        "<td>" + fechaActual + "</td>" +
+        "<td>" + horaActual + "</td>";
+
+      let celdaAccion =
+        document.createElement("td");
 
       let btnEliminar =
         document.createElement("button");
@@ -118,7 +162,7 @@
 
       btnEliminar.onclick = function () {
 
-        lista.removeChild(nuevoAlumno);
+        cuerpoTabla.removeChild(fila);
 
         contadorAlumnos--;
 
@@ -126,9 +170,11 @@
           "Alumnos presentes: " + contadorAlumnos;
       };
 
-      nuevoAlumno.appendChild(btnEliminar);
+      celdaAccion.appendChild(btnEliminar);
 
-      lista.appendChild(nuevoAlumno);
+      fila.appendChild(celdaAccion);
+
+      cuerpoTabla.appendChild(fila);
 
       contadorAlumnos++;
 
@@ -141,7 +187,7 @@
 
     function limpiarLista() {
 
-      document.getElementById("listaAlumnos").innerHTML = "";
+      document.getElementById("cuerpoTabla").innerHTML = "";
 
       contadorAlumnos = 0;
 
