@@ -11,27 +11,56 @@
 
   <div class="contenedor">
 
-    <div class="logos">
-      <img src="logouaem.png" alt="Logo UAEM">
-      <img src="logofcaei.png" alt="Logo FCAeI">
+    <!-- ENCABEZADO -->
+    <div class="encabezado">
+
+      <img src="logouaem.png" alt="Logo UAEM" class="logo-izq">
+
+      <div class="titulo">
+        <h1>Universidad Autónoma del Estado de Morelos</h1>
+        <h2>Facultad de Contabilidad, Administración e Informática</h2>
+      </div>
+
+      <img src="logofcaei.png" alt="Logo FCAeI" class="logo-der">
+
     </div>
 
-    <h1>Universidad Autónoma del Estado de Morelos</h1>
-    <h2>Facultad de Contabilidad, Administración e Informática</h2>
+    <!-- INFORMACIÓN -->
+    <div class="info-materia">
+      <p><strong>Docente:</strong> Kevin Alquicira Hernandez</p>
+      <p><strong>Materia:</strong> INTRODUCCIÓN A LA INVESTIGACIÓN</p>
+    </div>
 
-    <h3>Docente: Kevin Alquicira Hernandez</h3>
-    <h3>Materia: INTRODUCCION A LA INVESTIGACION</h3>
+    <!-- FORMULARIO -->
+    <input
+      type="text"
+      id="matriculaAlumno"
+      placeholder="Ingresa tu matrícula"
+    >
 
-    <input type="text" id="matriculaAlumno" placeholder="Ingresa tu matrícula">
-    <input type="text" id="nombreAlumno" placeholder="Ingresa tu nombre">
+    <input
+      type="text"
+      id="nombreAlumno"
+      placeholder="Ingresa tu nombre"
+    >
 
-    <button onclick="pasarLista()">Pasar Lista</button>
+    <div class="botones">
 
-    <button class="btnEliminarGeneral" onclick="limpiarLista()">
-      Limpiar Lista
-    </button>
+      <button onclick="pasarLista()">
+        Pasar Lista
+      </button>
 
-    <h3 id="contador">Alumnos presentes: 0</h3>
+      <button
+        class="btnEliminarGeneral"
+        onclick="limpiarLista()">
+        Limpiar Lista
+      </button>
+
+    </div>
+
+    <h3 id="contador">
+      Alumnos presentes: 0
+    </h3>
 
     <ul id="listaAlumnos"></ul>
 
@@ -43,8 +72,11 @@
 
     function pasarLista() {
 
-      let matricula = document.getElementById("matriculaAlumno").value;
-      let nombre = document.getElementById("nombreAlumno").value;
+      let matricula =
+        document.getElementById("matriculaAlumno").value;
+
+      let nombre =
+        document.getElementById("nombreAlumno").value;
 
       if (matricula.trim() === "") {
         alert("Por favor escribe tu matrícula");
@@ -56,33 +88,46 @@
         return;
       }
 
-      let lista = document.getElementById("listaAlumnos");
-      let nuevoAlumno = document.createElement("li");
+      let lista =
+        document.getElementById("listaAlumnos");
+
+      let nuevoAlumno =
+        document.createElement("li");
 
       let fecha = new Date();
-      let fechaActual = fecha.toLocaleDateString();
-      let horaActual = fecha.toLocaleTimeString();
 
-      // SOLO DATOS QUE QUIERES
+      let fechaActual =
+        fecha.toLocaleDateString();
+
+      let horaActual =
+        fecha.toLocaleTimeString();
+
       nuevoAlumno.innerHTML =
-        "Matrícula: " + matricula +
-        " | Nombre: " + nombre +
-        " | Fecha: " + fechaActual +
-        " | Hora: " + horaActual;
+        "<span>" +
+        "<strong>Matrícula:</strong> " + matricula +
+        " | <strong>Nombre:</strong> " + nombre +
+        " | <strong>Fecha:</strong> " + fechaActual +
+        " | <strong>Hora:</strong> " + horaActual +
+        "</span>";
 
-      // BOTÓN ELIMINAR ROJO
-      let btnEliminar = document.createElement("button");
+      let btnEliminar =
+        document.createElement("button");
+
       btnEliminar.textContent = "Eliminar";
       btnEliminar.classList.add("btnEliminar");
 
       btnEliminar.onclick = function () {
+
         lista.removeChild(nuevoAlumno);
+
         contadorAlumnos--;
+
         document.getElementById("contador").textContent =
           "Alumnos presentes: " + contadorAlumnos;
       };
 
       nuevoAlumno.appendChild(btnEliminar);
+
       lista.appendChild(nuevoAlumno);
 
       contadorAlumnos++;
@@ -95,7 +140,9 @@
     }
 
     function limpiarLista() {
+
       document.getElementById("listaAlumnos").innerHTML = "";
+
       contadorAlumnos = 0;
 
       document.getElementById("contador").textContent =

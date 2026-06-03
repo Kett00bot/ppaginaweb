@@ -1,98 +1,238 @@
-body{
+*{
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-
-  background: #004a99;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  height: 100vh;
+  box-sizing: border-box;
 }
+
+body{
+  font-family: "Segoe UI", sans-serif;
+
+  background: linear-gradient(
+    135deg,
+    #003366,
+    #0059b3
+  );
+
+  min-height: 100vh;
+  padding: 40px;
+}
+
+/* CONTENEDOR */
 
 .contenedor{
-  background: #f2f2f2;
-  width: 450px;
-  padding: 30px;
-  border-radius: 15px;
-  text-align: center;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.4);
+  max-width: 900px;
+  margin: auto;
+
+  background: white;
+
+  border-radius: 20px;
+
+  padding: 35px;
+
+  box-shadow: 0 15px 40px rgba(0,0,0,.25);
 }
 
-/* LOGOS */
-.logos{
+/* ENCABEZADO */
+
+.encabezado{
   display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-bottom: 15px;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 30px;
 }
 
-.logos img{
-  width: 70px;
+.logo-izq,
+.logo-der{
+  width: 90px;
   height: auto;
 }
 
+.titulo{
+  flex: 1;
+  text-align: center;
+  padding: 0 20px;
+}
+
 h1{
-  font-size: 18px;
-  color: #0b2c5f;
+  color: #003366;
+  font-size: 28px;
   margin-bottom: 10px;
 }
 
 h2{
-  font-size: 15px;
-  color: #0b4c8c;
-  margin-bottom: 20px;
+  color: #0066cc;
+  font-size: 18px;
+  font-weight: 500;
 }
 
-h3{
-  color: #222;
-  margin-bottom: 20px;
+/* TARJETA */
+
+.info-materia{
+  background: #f4f8fc;
+
+  border-left: 5px solid #005bbb;
+
+  border-radius: 10px;
+
+  padding: 15px;
+
+  margin-bottom: 25px;
 }
+
+.info-materia p{
+  margin: 8px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+/* INPUTS */
 
 input{
-  width: 85%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  width: 100%;
+
+  padding: 14px;
+
   margin-bottom: 15px;
+
+  border: 1px solid #d4d4d4;
+
+  border-radius: 10px;
+
+  font-size: 15px;
 }
 
-/* BOTÓN PRINCIPAL */
+input:focus{
+  outline: none;
+
+  border-color: #005bbb;
+
+  box-shadow: 0 0 8px rgba(0,91,187,.3);
+}
+
+/* BOTONES */
+
+.botones{
+  display: flex;
+  gap: 15px;
+}
+
 button{
+  flex: 1;
+
   background: #005bbb;
+
   color: white;
+
   border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
+
+  padding: 13px;
+
+  border-radius: 10px;
+
+  font-size: 15px;
+
+  font-weight: bold;
+
   cursor: pointer;
+
+  transition: .3s;
 }
 
 button:hover{
-  background: #003f88;
+  background: #004799;
+  transform: translateY(-2px);
 }
 
-/* BOTÓN ELIMINAR (ROJO) */
-.btnEliminar{
+.btnEliminarGeneral{
   background: #d62828;
-  margin-left: 10px;
 }
 
-.btnEliminar:hover{
-  background: #a4161a;
-  color: white;
+.btnEliminarGeneral:hover{
+  background: #b71c1c;
 }
 
-/* UL Y LI */
+/* CONTADOR */
+
+#contador{
+  text-align: center;
+
+  margin-top: 25px;
+
+  color: #003366;
+
+  font-size: 24px;
+}
+
+/* LISTA */
+
 ul{
-  margin-top: 20px;
-  text-align: left;
+  list-style: none;
+  margin-top: 25px;
 }
 
 li{
-  margin-bottom: 8px;
+  background: #f7f9fc;
+
+  border-left: 5px solid #005bbb;
+
+  border-radius: 10px;
+
+  padding: 12px;
+
+  margin-bottom: 12px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 15px;
+}
+
+li span{
+  flex: 1;
+}
+
+.btnEliminar{
+  background: #d62828;
+  padding: 8px 15px;
+}
+
+.btnEliminar:hover{
+  background: #b71c1c;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px){
+
+  .encabezado{
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .logo-izq,
+  .logo-der{
+    width: 75px;
+  }
+
+  .botones{
+    flex-direction: column;
+  }
+
+  li{
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btnEliminar{
+    width: 100%;
+  }
+
+  h1{
+    font-size: 22px;
+  }
+
+  h2{
+    font-size: 16px;
+  }
 }
