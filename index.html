@@ -6,157 +6,8 @@
 
 <title>Pase de Lista</title>
 
-<style>
+<link rel="stylesheet" href="style.css">
 
-  /* FONDO DE LA PÁGINA */
-  body{
-    margin:0;
-    padding:20px;
-    font-family:Arial, sans-serif;
-
-    background-image:url("fcaei.jpg");
-    background-size:cover;
-    background-position:center;
-    background-repeat:no-repeat;
-    background-attachment:fixed;
-  }
-
-  /* CONTENEDOR PRINCIPAL */
-  .contenedor{
-    max-width:1200px;
-    margin:auto;
-
-    background:rgba(255,255,255,0.90);
-    backdrop-filter:blur(8px);
-
-    padding:25px;
-    border-radius:15px;
-
-    box-shadow:0 5px 20px rgba(0,0,0,0.3);
-  }
-
-  /* ENCABEZADO */
-  .encabezado{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-
-    border-bottom:3px solid #0b4f8a;
-    padding-bottom:15px;
-    margin-bottom:20px;
-  }
-
-  .titulo{
-    text-align:center;
-    flex:1;
-  }
-
-  .titulo h1{
-    margin:0;
-    color:#0b4f8a;
-  }
-
-  .titulo h2{
-    margin:5px 0 0;
-    color:#444;
-  }
-
-  .logo-izq,
-  .logo-der{
-    width:100px;
-    height:auto;
-  }
-
-  /* INFORMACIÓN */
-  .info-materia{
-    background:#eaf3ff;
-    padding:15px;
-    border-radius:10px;
-    margin-bottom:20px;
-  }
-
-  .info-materia p{
-    margin:5px 0;
-  }
-
-  /* INPUTS */
-  input{
-    width:100%;
-    padding:12px;
-    margin-bottom:12px;
-
-    border:1px solid #ccc;
-    border-radius:8px;
-
-    box-sizing:border-box;
-  }
-
-  /* BOTONES */
-  .botones{
-    display:flex;
-    gap:10px;
-    margin-bottom:20px;
-  }
-
-  button{
-    padding:12px 20px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-  }
-
-  button:hover{
-    opacity:0.9;
-  }
-
-  .btnEliminarGeneral{
-    background:#d32f2f;
-    color:white;
-  }
-
-  .botones button:first-child{
-    background:#0b4f8a;
-    color:white;
-  }
-
-  .btnEliminar{
-    background:#d32f2f;
-    color:white;
-    padding:8px 15px;
-  }
-
-  /* CONTADOR */
-  #contador{
-    color:#0b4f8a;
-  }
-
-  /* TABLA */
-  table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-    background:white;
-  }
-
-  th,
-  td{
-    border:1px solid #ccc;
-    padding:10px;
-    text-align:center;
-  }
-
-  th{
-    background:#0b4f8a;
-    color:white;
-  }
-
-  tr:nth-child(even){
-    background:#f5f5f5;
-  }
-
-</style>
 </head>
 
 <body>
@@ -177,10 +28,50 @@
 
   </div>
 
-  <!-- INFORMACIÓN -->
+  <!-- NUEVO: REGISTRO DEL DOCENTE -->
+  <div class="info-docente">
+
+    <h3>Registro del Docente</h3>
+
+    <input
+      type="text"
+      id="nombreDocente"
+      placeholder="Nombre del docente">
+
+    <input
+      type="text"
+      id="materia"
+      placeholder="Nombre de la materia">
+
+    <input
+      type="text"
+      id="grupo"
+      placeholder="Grupo">
+
+    <button onclick="registrarDocente()">
+      Registrar Docente
+    </button>
+
+  </div>
+
+  <!-- NUEVO: INFORMACIÓN DEL DOCENTE -->
   <div class="info-materia">
-    <p><strong>Docente:</strong> Kevin Alquicira Hernandez</p>
-    <p><strong>Materia:</strong> INTRODUCCIÓN A LA INVESTIGACIÓN</p>
+
+    <p>
+      <strong>Docente:</strong>
+      <span id="mostrarDocente">Sin registrar</span>
+    </p>
+
+    <p>
+      <strong>Materia:</strong>
+      <span id="mostrarMateria">Sin registrar</span>
+    </p>
+
+    <p>
+      <strong>Grupo:</strong>
+      <span id="mostrarGrupo">Sin registrar</span>
+    </p>
+
   </div>
 
   <!-- FORMULARIO -->
@@ -208,6 +99,7 @@
 
   </div>
 
+  <!-- CONTADOR -->
   <h3 id="contador">
     Alumnos presentes: 0
   </h3>
@@ -225,8 +117,7 @@
       </tr>
     </thead>
 
-    <tbody id="cuerpoTabla">
-    </tbody>
+    <tbody id="cuerpoTabla"></tbody>
 
   </table>
 
@@ -235,6 +126,38 @@
 <script>
 
 let contadorAlumnos = 0;
+
+/* NUEVO: REGISTRAR DOCENTE */
+
+function registrarDocente(){
+
+  let docente =
+    document.getElementById("nombreDocente").value;
+
+  let materia =
+    document.getElementById("materia").value;
+
+  let grupo =
+    document.getElementById("grupo").value;
+
+  if(
+    docente.trim() === "" ||
+    materia.trim() === "" ||
+    grupo.trim() === ""
+  ){
+    alert("Completa todos los datos del docente");
+    return;
+  }
+
+  document.getElementById("mostrarDocente").textContent =
+    docente;
+
+  document.getElementById("mostrarMateria").textContent =
+    materia;
+
+  document.getElementById("mostrarGrupo").textContent =
+    grupo;
+}
 
 function pasarLista() {
 
