@@ -314,7 +314,7 @@ function iniciarSesion() {
       document.getElementById("contenedorBtnExcel").style.display = "none"; 
     } else {
       alumnoLogueado = null;
-      document.getElementById("campos-identificacion-alumno").style.display = "none";
+document.getElementById("campos-identificacion-alumno").style.display = "none";
       document.getElementById("panelDocenteConfig").style.display = "block";
       document.getElementById("btnLimpiarListaGeneral").style.display = "block";
       document.getElementById("contenedorBtnExcel").style.display = "flex"; 
@@ -542,7 +542,6 @@ function limpiarLista() {
 function exportarExcelAsistencias() {
   alert("¡Estructura lista! En el siguiente paso programaremos la descarga real del Excel.");
 }
-
 function generarQRClase() {
 
   let codigo = "FCAEI-" + Math.floor(Math.random() * 10000);
