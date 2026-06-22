@@ -10,11 +10,46 @@
 
 </head>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <body>
 
-<div class="contenedor">
+<div id="pantalla-acceso" class="pantalla-acceso">
+  <div class="tarjeta-login">
+    <div class="login-header">
+      <h2>Bienvenido</h2>
+      <p>Por favor, selecciona tu rol e ingresa tus datos</p>
+    </div>
 
-  <!-- ENCABEZADO -->
+    <div class="grupo-rol">
+      <label>
+        <input type="radio" name="rolAcceso" value="Alumno" checked onclick="cambiarRolLogin()"> Alumno
+      </label>
+      <label>
+        <input type="radio" name="rolAcceso" value="Docente" onclick="cambiarRolLogin()"> Docente
+      </label>
+    </div>
+
+    <div id="seccion-auth">
+      <input type="text" id="matriculaAuth" placeholder="Ingresa tu Matrícula">
+      <input type="text" id="usuarioAuth" placeholder="Nombre de usuario o Correo">
+      <input type="password" id="passwordAuth" placeholder="Contraseña">
+      
+      <div class="botones-auth">
+        <button onclick="iniciarSesion()">Iniciar Sesión</button>
+        <button class="btn-secundario" onclick="registrarUsuario()">Registrarse</button>
+      </div>
+      <p class="nota-auth">*Si no tienes cuenta, escribe tus datos y presiona "Registrarse".</p>
+    </div>
+  </div>
+</div>
+
+<div class="contenedor" id="contenedor-principal" style="display: none;">
+
+  <div class="barra-navegacion">
+    <button class="btn-regresar" onclick="regresarAlMenu()">← Regresar al Menú Principal</button>
+  </div>
+
   <div class="encabezado">
 
     <img src="logouaem.png" alt="Logo UAEM" class="logo-izq">
@@ -28,8 +63,9 @@
 
   </div>
 
-  <!-- NUEVO: REGISTRO DEL DOCENTE -->
-  <div class="info-docente">
+  <div id="alerta-sistema" class="alerta-sistema" style="display: none;"></div>
+
+  <div class="info-docente" id="panelDocenteConfig">
 
     <h3>Registro del Docente</h3>
 
@@ -48,13 +84,30 @@
       id="grupo"
       placeholder="Grupo">
 
+    <div class="grupo-input-inline">
+      <label for="limiteAlumnos">Cantidad total de alumnos:</label>
+      <input type="number" id="limiteAlumnos" value="22" min="1" style="width: 100px; display: inline-block; margin-left: 10px;">
+    </div>
+
+    <div class="grupo-input-inline" style="margin-top: 5px; margin-bottom: 15px;">
+      <label for="tiempoMinutos">Tiempo para pase de lista (minutos):</label>
+      <input type="number" id="tiempoMinutos" value="5" min="1" max="60" style="width: 100px; display: inline-block; margin-left: 10px;">
+    </div>
+
     <button onclick="registrarDocente()">
-      Registrar Docente
+      Registrar Docente e Iniciar Pase
     </button>
+
+    <button onclick="generarQRClase()">
+ Generar QR de Acceso
+</button>
+
+<p id="codigoClaseTexto"></p>
+
+<div id="contenedorQR"></div>
 
   </div>
 
-  <!-- NUEVO: INFORMACIÓN DEL DOCENTE -->
   <div class="info-materia">
 
     <p>
@@ -72,26 +125,32 @@
       <span id="mostrarGrupo">Sin registrar</span>
     </p>
 
+    <p id="contenedor-cronometro" style="font-size: 18px; font-weight: bold; color: #d32f2f; margin-top: 10px;">
+      Tiempo restante: <span id="cronometro">--:--</span>
+    </p>
+
   </div>
 
-  <!-- FORMULARIO -->
-  <input
-    type="text"
-    id="matriculaAlumno"
-    placeholder="Ingresa tu matrícula">
+  <div id="campos-identificacion-alumno">
+    <input
+      type="text"
+      id="matriculaAlumno"
+      placeholder="Ingresa tu matrícula">
 
-  <input
-    type="text"
-    id="nombreAlumno"
-    placeholder="Ingresa tu nombre">
+    <input
+      type="text"
+      id="nombreAlumno"
+      placeholder="Ingresa tu nombre">
+  </div>
 
   <div class="botones">
 
-    <button onclick="pasarLista()">
+    <button id="btnPasarLista" onclick="pasarLista()">
       Pasar Lista
     </button>
 
     <button
+      id="btnLimpiarListaGeneral"
       class="btnEliminarGeneral"
       onclick="limpiarLista()">
       Limpiar Lista
@@ -99,12 +158,10 @@
 
   </div>
 
-  <!-- CONTADOR -->
   <h3 id="contador">
-    Alumnos presentes: 0
+    Pases de lista disponibles: 0 / 22 registrados
   </h3>
 
-  <!-- TABLA -->
   <table id="tablaAsistencia">
 
     <thead>
@@ -121,51 +178,286 @@
 
   </table>
 
+  <div class="contenedor-excel" id="contenedorBtnExcel" style="display: none;">
+    <button class="btn-excel" onclick="exportarExcelAsistencias()">
+      📊 Exportar Reporte a Excel
+    </button>
+  </div>
+
 </div>
 
 <script>
+// Variables de estado globales persistentes en memoria local simulando red
+let alumnoLogueado = null;
+let limiteAlumnosMax = 22;
+let cuentaRegresivaInterval = null;
+let tiempoTerminado = false;
+let paseCerradoPorLimite = false;
 
-let contadorAlumnos = 0;
+// Cargar registros existentes del localStorage al arrancar para reflejar persistencia alumno/docente
+let asistenciaGlobal = JSON.parse(localStorage.getItem("asistencia_global")) || [];
+let configuracionClase = JSON.parse(localStorage.getItem("config_clase")) || { docente: "Sin registrar", materia: "Sin registrar", grupo: "Sin registrar", limite: 22, finTiempo: null };
 
-/* NUEVO: REGISTRAR DOCENTE */
+function cambiarRolLogin() {
+  const rolSeleccionado = document.querySelector('input[name="rolAcceso"]:checked').value;
+  const inputMatricula = document.getElementById("matriculaAuth");
+  
+  if (rolSeleccionado === "Alumno") {
+    inputMatricula.style.display = "block";
+  } else {
+    inputMatricula.style.display = "none";
+    inputMatricula.value = "";
+  }
+}
 
+// Ejecutar al cargar
+cambiarRolLogin();
+cargarDatosIniciales();
+
+function cargarDatosIniciales() {
+  limiteAlumnosMax = configuracionClase.limite;
+  document.getElementById("mostrarDocente").textContent = configuracionClase.docente;
+  document.getElementById("mostrarMateria").textContent = configuracionClase.materia;
+  document.getElementById("mostrarGrupo").textContent = configuracionClase.grupo;
+  document.getElementById("limiteAlumnos").value = configuracionClase.limite;
+  
+  actualizarTablaYContador();
+  verificarYActivarCronometroExistente();
+}
+
+function regresarAlMenu() {
+  clearInterval(cuentaRegresivaInterval);
+  document.getElementById("contenedor-principal").style.display = "none";
+  document.getElementById("pantalla-acceso").style.display = "flex";
+  alumnoLogueado = null;
+}
+
+// ==========================================
+// LÓGICA DEL SISTEMA DE LOGIN Y REGISTRO REAL
+// ==========================================
+function registrarUsuario() {
+  const usuario = document.getElementById("usuarioAuth").value.trim();
+  const contrasena = document.getElementById("passwordAuth").value;
+  const rol = document.querySelector('input[name="rolAcceso"]:checked').value;
+  const matricula = document.getElementById("matriculaAuth").value.trim();
+
+  if (usuario === "" || contrasena === "") {
+    alert("Por favor rellena ambos campos para registrarte.");
+    return;
+  }
+
+  if (rol === "Alumno" && matricula === "") {
+    alert("Por favor ingresa tu matrícula para registrarte como Alumno.");
+    return;
+  }
+
+  if (localStorage.getItem(usuario)) {
+    alert("Este usuario ya está registrado. Intenta iniciar sesión.");
+    return;
+  }
+
+  const datosUsuario = { 
+    contrasena: contrasena, 
+    rol: rol,
+    matricula: rol === "Alumno" ? matricula : ""
+  };
+  
+  localStorage.setItem(usuario, JSON.stringify(datosUsuario));
+  alert("¡Registro exitoso como " + rol + "! Ya puedes iniciar sesión.");
+}
+
+function iniciarSesion() {
+  const usuario = document.getElementById("usuarioAuth").value.trim();
+  const contrasena = document.getElementById("passwordAuth").value;
+  const rolSeleccionado = document.querySelector('input[name="rolAcceso"]:checked').value;
+  const matriculaIngresada = document.getElementById("matriculaAuth").value.trim();
+
+  if (usuario === "" || contrasena === "") {
+    alert("Por favor ingresa tu usuario y contraseña.");
+    return;
+  }
+
+  const datosGuardados = localStorage.getItem(usuario);
+
+  if (!datosGuardados) {
+    alert("El usuario no existe. Regístrate primero.");
+    return;
+  }
+
+  const datosParseados = JSON.parse(datosGuardados);
+
+  if (datosParseados.contrasena === contrasena) {
+    if (datosParseados.rol !== rolSeleccionado) {
+      alert("El usuario está registrado pero con el rol de: " + datosParseados.rol);
+      return;
+    }
+
+    if (rolSeleccionado === "Alumno" && datosParseados.matricula !== matriculaIngresada) {
+      alert("La matrícula no coincide con el usuario registrado.");
+      return;
+    }
+
+    alert("¡Acceso concedido como " + datosParseados.rol + "!");
+    
+    document.getElementById("pantalla-acceso").style.display = "none";
+    document.getElementById("contenedor-principal").style.display = "block";
+
+    asistenciaGlobal = JSON.parse(localStorage.getItem("asistencia_global")) || [];
+    configuracionClase = JSON.parse(localStorage.getItem("config_clase")) || configuracionClase;
+    cargarDatosIniciales();
+
+    if (rolSeleccionado === "Alumno") {
+      alumnoLogueado = { nombre: usuario, matricula: datosParseados.matricula };
+      document.getElementById("campos-identificacion-alumno").style.display = "none";
+      document.getElementById("panelDocenteConfig").style.display = "none";
+      document.getElementById("btnLimpiarListaGeneral").style.display = "none";
+      document.getElementById("contenedorBtnExcel").style.display = "none"; 
+    } else {
+      alumnoLogueado = null;
+      document.getElementById("campos-identificacion-alumno").style.display = "none";
+      document.getElementById("panelDocenteConfig").style.display = "block";
+      document.getElementById("btnLimpiarListaGeneral").style.display = "block";
+      document.getElementById("contenedorBtnExcel").style.display = "flex"; 
+    }
+
+    verificarBloqueosPaseLista();
+
+  } else {
+    alert("Contraseña incorrecta. Inténtalo de nuevo.");
+  }
+}
+
+// ==========================================
+// TU CÓDIGO BASE ADAPTADO
+// ==========================================
 function registrarDocente(){
+  let docente = document.getElementById("nombreDocente").value;
+  let materia = document.getElementById("materia").value;
+  let grupo = document.getElementById("grupo").value;
+  let limite = parseInt(document.getElementById("limiteAlumnos").value) || 22;
+  let minutos = parseInt(document.getElementById("tiempoMinutos").value) || 5;
 
-  let docente =
-    document.getElementById("nombreDocente").value;
-
-  let materia =
-    document.getElementById("materia").value;
-
-  let grupo =
-    document.getElementById("grupo").value;
-
-  if(
-    docente.trim() === "" ||
-    materia.trim() === "" ||
-    grupo.trim() === ""
-  ){
+  if(docente.trim() === "" || materia.trim() === "" || grupo.trim() === ""){
     alert("Completa todos los datos del docente");
     return;
   }
 
-  document.getElementById("mostrarDocente").textContent =
-    docente;
+  limiteAlumnosMax = limite;
+  tiempoTerminado = false;
+  paseCerradoPorLimite = false;
 
-  document.getElementById("mostrarMateria").textContent =
-    materia;
+  document.getElementById("mostrarDocente").textContent = docente;
+  document.getElementById("mostrarMateria").textContent = materia;
+  document.getElementById("mostrarGrupo").textContent = grupo;
 
-  document.getElementById("mostrarGrupo").textContent =
-    grupo;
+  let ahora = new Date();
+  let finTiempo = ahora.getTime() + (minutos * 60 * 1000);
+
+  configuracionClase = {
+    docente: docente,
+    materia: materia,
+    grupo: grupo,
+    limite: limite,
+    finTiempo: finTiempo
+  };
+
+  localStorage.setItem("config_clase", JSON.stringify(configuracionClase));
+  
+  document.getElementById("alerta-sistema").style.display = "none";
+  document.getElementById("btnPasarLista").disabled = false;
+
+  actualizarTablaYContador();
+  iniciarTemporizador(minutos * 60);
+}
+
+function iniciarTemporizador(segundosTotales) {
+  clearInterval(cuentaRegresivaInterval);
+  ejecutarCronometro(segundosTotales);
+}
+
+function verificarYActivarCronometroExistente() {
+  clearInterval(cuentaRegresivaInterval);
+  if (configuracionClase && configuracionClase.finTiempo) {
+    let ahora = new Date().getTime();
+    let saldoSegundos = Math.floor((configuracionClase.finTiempo - ahora) / 1000);
+
+    if (saldoSegundos > 0) {
+      tiempoTerminado = false;
+      ejecutarCronometro(saldoSegundos);
+    } else if (configuracionClase.docente !== "Sin registrar") {
+      finalizarPorTiempo();
+    }
+  }
+}
+
+function ejecutarCronometro(segundos) {
+  let tiempoRestante = segundos;
+  
+  function actualizarUI() {
+    let min = Math.floor(tiempoRestante / 60);
+    let seg = tiempoRestante % 60;
+    document.getElementById("cronometro").textContent = 
+      (min < 10 ? "0" : "") + min + ":" + (seg < 10 ? "0" : "") + seg;
+    
+    if (tiempoRestante <= 0) {
+      clearInterval(cuentaRegresivaInterval);
+      finalizarPorTiempo();
+    }
+    tiempoRestante--;
+  }
+  
+  actualizarUI();
+  cuentaRegresivaInterval = setInterval(actualizarUI, 1000);
+}
+
+function finalizarPorTiempo() {
+  tiempoTerminado = true;
+  document.getElementById("cronometro").textContent = "00:00";
+  let alerta = document.getElementById("alerta-sistema");
+  alerta.textContent = "¡Tiempo terminado! El pase de lista se encuentra cerrado.";
+  alerta.className = "alerta-sistema alerta-roja";
+  alerta.style.display = "block";
+  document.getElementById("btnPasarLista").disabled = true;
+}
+
+function verificarBloqueosPaseLista() {
+  let alerta = document.getElementById("alerta-sistema");
+  
+  if (asistenciaGlobal.length >= limiteAlumnosMax) {
+    paseCerradoPorLimite = true;
+    alerta.textContent = "Pase de lista cerrado: Límite de alumnos alcanzado de forma automática.";
+    alerta.style.display = "block";
+    document.getElementById("btnPasarLista").disabled = true;
+    return;
+  }
+
+  if (tiempoTerminado) {
+    alerta.textContent = "¡Tiempo terminado! El pase de lista se encuentra cerrado.";
+    alerta.style.display = "block";
+    document.getElementById("btnPasarLista").disabled = true;
+    return;
+  }
+
+  alerta.style.display = "none";
+  document.getElementById("btnPasarLista").disabled = false;
 }
 
 function pasarLista() {
+  if (tiempoTerminado || paseCerradoPorLimite || asistenciaGlobal.length >= limiteAlumnosMax) {
+    alert("El pase de lista está cerrado.");
+    return;
+  }
 
-  let matricula =
-    document.getElementById("matriculaAlumno").value;
+  let matricula = "";
+  let nombre = "";
 
-  let nombre =
-    document.getElementById("nombreAlumno").value;
+  if (alumnoLogueado) {
+    matricula = alumnoLogueado.matricula;
+    nombre = alumnoLogueado.nombre;
+  } else {
+    matricula = document.getElementById("matriculaAlumno").value;
+    nombre = document.getElementById("nombreAlumno").value;
+  }
 
   if (matricula.trim() === "") {
     alert("Por favor escribe tu matrícula");
@@ -177,71 +469,98 @@ function pasarLista() {
     return;
   }
 
-  let cuerpoTabla =
-    document.getElementById("cuerpoTabla");
-
-  let fila =
-    document.createElement("tr");
+  let yaRegistrado = asistenciaGlobal.some(al => al.matricula === matricula);
+  if (yaRegistrado) {
+    alert("Esta matrícula ya registró su asistencia.");
+    return;
+  }
 
   let fecha = new Date();
-
-  let fechaActual =
-    fecha.toLocaleDateString();
-
-  let horaActual =
-    fecha.toLocaleTimeString();
-
-  fila.innerHTML =
-    "<td>" + matricula + "</td>" +
-    "<td>" + nombre + "</td>" +
-    "<td>" + fechaActual + "</td>" +
-    "<td>" + horaActual + "</td>";
-
-  let celdaAccion =
-    document.createElement("td");
-
-  let btnEliminar =
-    document.createElement("button");
-
-  btnEliminar.textContent = "Eliminar";
-
-  btnEliminar.classList.add("btnEliminar");
-
-  btnEliminar.onclick = function () {
-
-    cuerpoTabla.removeChild(fila);
-
-    contadorAlumnos--;
-
-    document.getElementById("contador").textContent =
-      "Alumnos presentes: " + contadorAlumnos;
+  let nuevoRegistro = {
+    matricula: matricula,
+    nombre: nombre,
+    fecha: fecha.toLocaleDateString(),
+    hora: fecha.toLocaleTimeString()
   };
 
-  celdaAccion.appendChild(btnEliminar);
+  asistenciaGlobal.push(nuevoRegistro);
+  localStorage.setItem("asistencia_global", JSON.stringify(asistenciaGlobal));
 
-  fila.appendChild(celdaAccion);
+  actualizarTablaYContador();
+  verificarBloqueosPaseLista();
 
-  cuerpoTabla.appendChild(fila);
+  if (!alumnoLogueado) {
+    document.getElementById("matriculaAlumno").value = "";
+    document.getElementById("nombreAlumno").value = "";
+  } else {
+    alert("¡Asistencia registrada con éxito!");
+  }
+}
 
-  contadorAlumnos++;
+function actualizarTablaYContador() {
+  let cuerpoTabla = document.getElementById("cuerpoTabla");
+  cuerpoTabla.innerHTML = "";
 
-  document.getElementById("contador").textContent =
-    "Alumnos presentes: " + contadorAlumnos;
+  asistenciaGlobal.forEach((alumno, index) => {
+    let fila = document.createElement("tr");
+    fila.innerHTML = "<td>" + alumno.matricula + "</td>" + 
+                     "<td>" + alumno.nombre + "</td>" + 
+                     "<td>" + alumno.fecha + "</td>" + 
+                     "<td>" + alumno.hora + "</td>";
 
-  document.getElementById("matriculaAlumno").value = "";
-  document.getElementById("nombreAlumno").value = "";
+    let celdaAccion = document.createElement("td");
+    let btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "Eliminar";
+    btnEliminar.classList.add("btnEliminar");
+
+    btnEliminar.onclick = function () {
+      asistenciaGlobal.splice(index, 1);
+      localStorage.setItem("asistencia_global", JSON.stringify(asistenciaGlobal));
+      actualizarTablaYContador();
+      verificarBloqueosPaseLista();
+    };
+
+    celdaAccion.appendChild(btnEliminar);
+    fila.appendChild(celdaAccion);
+    cuerpoTabla.appendChild(fila); 
+  });
+
+  document.getElementById("contador").textContent = 
+    "Pases de lista disponibles: " + asistenciaGlobal.length + " / " + limiteAlumnosMax + " registrados";
 }
 
 function limpiarLista() {
-
-  document.getElementById("cuerpoTabla").innerHTML = "";
-
-  contadorAlumnos = 0;
-
-  document.getElementById("contador").textContent =
-    "Alumnos presentes: 0";
+  asistenciaGlobal = [];
+  localStorage.removeItem("asistencia_global");
+  actualizarTablaYContador();
+  document.getElementById("alerta-sistema").style.display = "none";
+  document.getElementById("btnPasarLista").disabled = false;
+  paseCerradoPorLimite = false;
 }
 
+// Función temporal para la acción de exportar
+function exportarExcelAsistencias() {
+  alert("¡Estructura lista! En el siguiente paso programaremos la descarga real del Excel.");
+}
+
+function generarQRClase() {
+
+  let codigo = "FCAEI-" + Math.floor(Math.random() * 10000);
+
+  document.getElementById("codigoClaseTexto").innerHTML =
+    "<strong>Código de acceso:</strong> " + codigo;
+
+  document.getElementById("contenedorQR").innerHTML = "";
+
+  new QRCode(
+    document.getElementById("contenedorQR"),
+    {
+      text: codigo,
+      width: 220,
+      height: 220
+    }
+  );
+}
 </script>
 
 </body>
