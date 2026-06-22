@@ -21,14 +21,15 @@
 
     <div class="grupo-rol">
       <label>
-        <input type="radio" name="rolAcceso" value="Alumno" checked> Alumno
+        <input type="radio" name="rolAcceso" value="Alumno" checked onclick="cambiarRolLogin()"> Alumno
       </label>
       <label>
-        <input type="radio" name="rolAcceso" value="Docente"> Docente
+        <input type="radio" name="rolAcceso" value="Docente" onclick="cambiarRolLogin()"> Docente
       </label>
     </div>
 
     <div id="seccion-auth">
+      <input type="text" id="matriculaAuth" placeholder="Ingresa tu Matrícula">
       <input type="text" id="usuarioAuth" placeholder="Nombre de usuario o Correo">
       <input type="password" id="passwordAuth" placeholder="Contraseña">
       
@@ -56,7 +57,7 @@
 
   </div>
 
-  <div class="info-docente">
+  <div class="info-docente" id="panelDocenteConfig">
 
     <h3>Registro del Docente</h3>
 
@@ -100,15 +101,17 @@
 
   </div>
 
-  <input
-    type="text"
-    id="matriculaAlumno"
-    placeholder="Ingresa tu matrícula">
+  <div id="campos-identificacion-alumno">
+    <input
+      type="text"
+      id="matriculaAlumno"
+      placeholder="Ingresa tu matrícula">
 
-  <input
-    type="text"
-    id="nombreAlumno"
-    placeholder="Ingresa tu nombre">
+    <input
+      type="text"
+      id="nombreAlumno"
+      placeholder="Ingresa tu nombre">
+  </div>
 
   <div class="botones">
 
@@ -117,6 +120,7 @@
     </button>
 
     <button
+      id="btnLimpiarListaGeneral"
       class="btnEliminarGeneral"
       onclick="limpiarLista()">
       Limpiar Lista
@@ -147,6 +151,25 @@
 </div>
 
 <script>
+// Variables globales para mantener los datos del alumno logueado si aplica
+let alumnoLogueado = null;
+
+// Control visual del Login dependiente del Rol
+function cambiarRolLogin() {
+  const rolSeleccionado = document.querySelector('input[name="rolAcceso"]:checked').value;
+  const inputMatricula = document.getElementById("matriculaAuth");
+  
+  if (rolSeleccionado === "Alumno") {
+    inputMatricula.style.display = "block";
+  } else {
+    inputMatricula.style.display = "none";
+    inputMatricula.value = ""; // Limpia el valor si cambia a docente
+  }
+}
+
+// Ejecutar al cargar para asegurar el estado inicial correcto
+cambiarRolLogin();
+
 // ==========================================
 // LÓGICA DEL SISTEMA DE LOGIN Y REGISTRO REAL
 // ==========================================
@@ -154,9 +177,15 @@ function registrarUsuario() {
   const usuario = document.getElementById("usuarioAuth").value.trim();
   const contrasena = document.getElementById("passwordAuth").value;
   const rol = document.querySelector('input[name="rolAcceso"]:checked').value;
+  const matricula = document.getElementById("matriculaAuth").value.trim();
 
   if (usuario === "" || contrasena === "") {
     alert("Por favor rellena ambos campos para registrarte.");
+    return;
+  }
+
+  if (rol === "Alumno" && matricula === "") {
+    alert("Por favor ingresa tu matrícula para registrarte como Alumno.");
     return;
   }
 
@@ -165,7 +194,13 @@ function registrarUsuario() {
     return;
   }
 
-  const datosUsuario = { contrasena: contrasena, rol: rol };
+  // Guardamos la matrícula sólo si es Alumno
+  const datosUsuario = { 
+    contrasena: contrasena, 
+    rol: rol,
+    matricula: rol === "Alumno" ? matricula : ""
+  };
+  
   localStorage.setItem(usuario, JSON.stringify(datosUsuario));
 
   alert("¡Registro exitoso como " + rol + "! Ya puedes iniciar sesión.");
@@ -175,6 +210,7 @@ function iniciarSesion() {
   const usuario = document.getElementById("usuarioAuth").value.trim();
   const contrasena = document.getElementById("passwordAuth").value;
   const rolSeleccionado = document.querySelector('input[name="rolAcceso"]:checked').value;
+  const matriculaIngresada = document.getElementById("matriculaAuth").value.trim();
 
   if (usuario === "" || contrasena === "") {
     alert("Por favor ingresa tu usuario y contraseña.");
@@ -196,11 +232,40 @@ function iniciarSesion() {
       return;
     }
 
+    // Validación extra: Validar matrícula si es alumno
+    if (rolSeleccionado === "Alumno" && datosParseados.matricula !== matriculaIngresada) {
+      alert("La matrícula no coincide con el usuario registrado.");
+      return;
+    }
+
     alert("¡Acceso concedido como " + datosParseados.rol + "!");
     
     // OCULTA EL LOGIN Y MUESTRA LA PÁGINA PRINCIPAL
     document.getElementById("pantalla-acceso").style.display = "none";
     document.getElementById("contenedor-principal").style.display = "block";
+
+    // AJUSTAR VISTA PERFIL SEGÚN EL ROL LOGUEADO
+    if (rolSeleccionado === "Alumno") {
+      // Guarda la referencia del alumno activo
+      alumnoLogueado = {
+        nombre: usuario,
+        matricula: datosParseados.matricula
+      };
+      
+      // Oculta la sección donde se digita matrícula y nombre de manera manual
+      document.getElementById("campos-identificacion-alumno").style.display = "none";
+      // Oculta configuraciones administrativas que el alumno no debería alterar si es su perfil
+      document.getElementById("panelDocenteConfig").style.display = "none";
+      document.getElementById("btnLimpiarListaGeneral").style.display = "none";
+
+    } else if (rolSeleccionado === "Docente") {
+      alumnoLogueado = null;
+      // El docente ve todo el panel de control manual de alumnos por si lo requiere
+      document.getElementById("campos-identificacion-alumno").style.display = "block";
+      document.getElementById("panelDocenteConfig").style.display = "block";
+      document.getElementById("btnLimpiarListaGeneral").style.display = "block";
+    }
+
   } else {
     alert("Contraseña incorrecta. Inténtalo de nuevo.");
   }
@@ -208,7 +273,7 @@ function iniciarSesion() {
 
 
 // ==========================================
-// TU CÓDIGO BASE INTACTO
+// TU CÓDIGO BASE INTEGRADO Y PROTEGIDO
 // ==========================================
 let contadorAlumnos = 0;
 
@@ -228,8 +293,17 @@ function registrarDocente(){
 }
 
 function pasarLista() {
-  let matricula = document.getElementById("matriculaAlumno").value;
-  let nombre = document.getElementById("nombreAlumno").value;
+  let matricula = "";
+  let nombre = "";
+
+  // Si inició sesión un alumno, toma sus datos automáticos. Si no, los toma del input de la pantalla.
+  if (alumnoLogueado) {
+    matricula = alumnoLogueado.matricula;
+    nombre = alumnoLogueado.nombre;
+  } else {
+    matricula = document.getElementById("matriculaAlumno").value;
+    nombre = document.getElementById("nombreAlumno").value;
+  }
 
   if (matricula.trim() === "") {
     alert("Por favor escribe tu matrícula");
@@ -262,13 +336,16 @@ function pasarLista() {
 
   celdaAccion.appendChild(btnEliminar);
   fila.appendChild(celdaAccion);
-  cuerpoTabla.appendChild(fila);
+  bodyTabla = cuerpoTabla.appendChild(fila);
 
   contadorAlumnos++;
   document.getElementById("contador").textContent = "Alumnos presentes: " + contadorAlumnos;
 
-  document.getElementById("matriculaAlumno").value = "";
-  document.getElementById("nombreAlumno").value = "";
+  // Solo limpia inputs si se están usando de modo manual
+  if (!alumnoLogueado) {
+    document.getElementById("matriculaAlumno").value = "";
+    document.getElementById("nombreAlumno").value = "";
+  }
 }
 
 function limpiarLista() {
