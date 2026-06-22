@@ -12,9 +12,37 @@
 
 <body>
 
-<div class="contenedor">
+<div id="pantalla-acceso" class="pantalla-acceso">
+  <div class="tarjeta-login">
+    <div class="login-header">
+      <h2>Bienvenido</h2>
+      <p>Por favor, selecciona tu rol e ingresa tus datos</p>
+    </div>
 
-  <!-- ENCABEZADO -->
+    <div class="grupo-rol">
+      <label>
+        <input type="radio" name="rolAcceso" value="Alumno" checked> Alumno
+      </label>
+      <label>
+        <input type="radio" name="rolAcceso" value="Docente"> Docente
+      </label>
+    </div>
+
+    <div id="seccion-auth">
+      <input type="text" id="usuarioAuth" placeholder="Nombre de usuario o Correo">
+      <input type="password" id="passwordAuth" placeholder="Contraseña">
+      
+      <div class="botones-auth">
+        <button onclick="iniciarSesion()">Iniciar Sesión</button>
+        <button class="btn-secundario" onclick="registrarUsuario()">Registrarse</button>
+      </div>
+      <p class="nota-auth">*Si no tienes cuenta, escribe tus datos y presiona "Registrarse".</p>
+    </div>
+  </div>
+</div>
+
+<div class="contenedor" id="contenedor-principal" style="display: none;">
+
   <div class="encabezado">
 
     <img src="logouaem.png" alt="Logo UAEM" class="logo-izq">
@@ -28,7 +56,6 @@
 
   </div>
 
-  <!-- NUEVO: REGISTRO DEL DOCENTE -->
   <div class="info-docente">
 
     <h3>Registro del Docente</h3>
@@ -54,7 +81,6 @@
 
   </div>
 
-  <!-- NUEVO: INFORMACIÓN DEL DOCENTE -->
   <div class="info-materia">
 
     <p>
@@ -74,7 +100,6 @@
 
   </div>
 
-  <!-- FORMULARIO -->
   <input
     type="text"
     id="matriculaAlumno"
@@ -99,12 +124,10 @@
 
   </div>
 
-  <!-- CONTADOR -->
   <h3 id="contador">
     Alumnos presentes: 0
   </h3>
 
-  <!-- TABLA -->
   <table id="tablaAsistencia">
 
     <thead>
@@ -124,48 +147,89 @@
 </div>
 
 <script>
+// ==========================================
+// LÓGICA DEL SISTEMA DE LOGIN Y REGISTRO REAL
+// ==========================================
+function registrarUsuario() {
+  const usuario = document.getElementById("usuarioAuth").value.trim();
+  const contrasena = document.getElementById("passwordAuth").value;
+  const rol = document.querySelector('input[name="rolAcceso"]:checked').value;
 
+  if (usuario === "" || contrasena === "") {
+    alert("Por favor rellena ambos campos para registrarte.");
+    return;
+  }
+
+  if (localStorage.getItem(usuario)) {
+    alert("Este usuario ya está registrado. Intenta iniciar sesión.");
+    return;
+  }
+
+  const datosUsuario = { contrasena: contrasena, rol: rol };
+  localStorage.setItem(usuario, JSON.stringify(datosUsuario));
+
+  alert("¡Registro exitoso como " + rol + "! Ya puedes iniciar sesión.");
+}
+
+function iniciarSesion() {
+  const usuario = document.getElementById("usuarioAuth").value.trim();
+  const contrasena = document.getElementById("passwordAuth").value;
+  const rolSeleccionado = document.querySelector('input[name="rolAcceso"]:checked').value;
+
+  if (usuario === "" || contrasena === "") {
+    alert("Por favor ingresa tu usuario y contraseña.");
+    return;
+  }
+
+  const datosGuardados = localStorage.getItem(usuario);
+
+  if (!datosGuardados) {
+    alert("El usuario no existe. Regístrate primero.");
+    return;
+  }
+
+  const datosParseados = JSON.parse(datosGuardados);
+
+  if (datosParseados.contrasena === contrasena) {
+    if (datosParseados.rol !== rolSeleccionado) {
+      alert("El usuario está registrado pero con el rol de: " + datosParseados.rol);
+      return;
+    }
+
+    alert("¡Acceso concedido como " + datosParseados.rol + "!");
+    
+    // OCULTA EL LOGIN Y MUESTRA LA PÁGINA PRINCIPAL
+    document.getElementById("pantalla-acceso").style.display = "none";
+    document.getElementById("contenedor-principal").style.display = "block";
+  } else {
+    alert("Contraseña incorrecta. Inténtalo de nuevo.");
+  }
+}
+
+
+// ==========================================
+// TU CÓDIGO BASE INTACTO
+// ==========================================
 let contadorAlumnos = 0;
 
-/* NUEVO: REGISTRAR DOCENTE */
-
 function registrarDocente(){
+  let docente = document.getElementById("nombreDocente").value;
+  let materia = document.getElementById("materia").value;
+  let grupo = document.getElementById("grupo").value;
 
-  let docente =
-    document.getElementById("nombreDocente").value;
-
-  let materia =
-    document.getElementById("materia").value;
-
-  let grupo =
-    document.getElementById("grupo").value;
-
-  if(
-    docente.trim() === "" ||
-    materia.trim() === "" ||
-    grupo.trim() === ""
-  ){
+  if(docente.trim() === "" || materia.trim() === "" || grupo.trim() === ""){
     alert("Completa todos los datos del docente");
     return;
   }
 
-  document.getElementById("mostrarDocente").textContent =
-    docente;
-
-  document.getElementById("mostrarMateria").textContent =
-    materia;
-
-  document.getElementById("mostrarGrupo").textContent =
-    grupo;
+  document.getElementById("mostrarDocente").textContent = docente;
+  document.getElementById("mostrarMateria").textContent = materia;
+  document.getElementById("mostrarGrupo").textContent = grupo;
 }
 
 function pasarLista() {
-
-  let matricula =
-    document.getElementById("matriculaAlumno").value;
-
-  let nombre =
-    document.getElementById("nombreAlumno").value;
+  let matricula = document.getElementById("matriculaAlumno").value;
+  let nombre = document.getElementById("nombreAlumno").value;
 
   if (matricula.trim() === "") {
     alert("Por favor escribe tu matrícula");
@@ -177,71 +241,41 @@ function pasarLista() {
     return;
   }
 
-  let cuerpoTabla =
-    document.getElementById("cuerpoTabla");
-
-  let fila =
-    document.createElement("tr");
-
+  let cuerpoTabla = document.getElementById("cuerpoTabla");
+  let fila = document.createElement("tr");
   let fecha = new Date();
+  let fechaActual = fecha.toLocaleDateString();
+  let horaActual = fecha.toLocaleTimeString();
 
-  let fechaActual =
-    fecha.toLocaleDateString();
+  fila.innerHTML = "<td>" + matricula + "</td>" + "<td>" + nombre + "</td>" + "<td>" + fechaActual + "</td>" + "<td>" + horaActual + "</td>";
 
-  let horaActual =
-    fecha.toLocaleTimeString();
-
-  fila.innerHTML =
-    "<td>" + matricula + "</td>" +
-    "<td>" + nombre + "</td>" +
-    "<td>" + fechaActual + "</td>" +
-    "<td>" + horaActual + "</td>";
-
-  let celdaAccion =
-    document.createElement("td");
-
-  let btnEliminar =
-    document.createElement("button");
-
+  let celdaAccion = document.createElement("td");
+  let btnEliminar = document.createElement("button");
   btnEliminar.textContent = "Eliminar";
-
   btnEliminar.classList.add("btnEliminar");
 
   btnEliminar.onclick = function () {
-
     cuerpoTabla.removeChild(fila);
-
     contadorAlumnos--;
-
-    document.getElementById("contador").textContent =
-      "Alumnos presentes: " + contadorAlumnos;
+    document.getElementById("contador").textContent = "Alumnos presentes: " + contadorAlumnos;
   };
 
   celdaAccion.appendChild(btnEliminar);
-
   fila.appendChild(celdaAccion);
-
   cuerpoTabla.appendChild(fila);
 
   contadorAlumnos++;
-
-  document.getElementById("contador").textContent =
-    "Alumnos presentes: " + contadorAlumnos;
+  document.getElementById("contador").textContent = "Alumnos presentes: " + contadorAlumnos;
 
   document.getElementById("matriculaAlumno").value = "";
   document.getElementById("nombreAlumno").value = "";
 }
 
 function limpiarLista() {
-
   document.getElementById("cuerpoTabla").innerHTML = "";
-
   contadorAlumnos = 0;
-
-  document.getElementById("contador").textContent =
-    "Alumnos presentes: 0";
+  document.getElementById("contador").textContent = "Alumnos presentes: 0";
 }
-
 </script>
 
 </body>

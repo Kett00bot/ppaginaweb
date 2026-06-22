@@ -1,5 +1,4 @@
-/* FONDO */
-
+/* FONDO DE TU CÓDIGO BASE */
 body{
   margin:0;
   padding:20px;
@@ -12,35 +11,98 @@ body{
   background-attachment:fixed;
 }
 
-/* CONTENEDOR */
+/* ESTILOS DE LA PANTALLA DE ACCESO (AHORA CON fondologin.png) */
+.pantalla-acceso {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("fondologin.png"); /* Se cambió el nombre de la imagen aquí */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 10000; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+.tarjeta-login {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  backdrop-filter: blur(5px);
+}
+
+.login-header h2 {
+  color: #0b4f8a;
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.login-header p {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.grupo-rol {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.grupo-rol label {
+  cursor: pointer;
+}
+
+.botones-auth {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.botones-auth button {
+  flex: 1;
+}
+
+.btn-secundario {
+  background: #4caf50 !important; 
+}
+
+.nota-auth {
+  font-size: 11px;
+  color: #777;
+  margin-top: 15px;
+  text-align: left;
+}
+
+/* CONTENEDOR TU CÓDIGO BASE */
 .contenedor{
   max-width:1200px;
   margin:auto;
-
   background:rgba(255,255,255,0.90);
-
   backdrop-filter:blur(8px);
-
   padding:25px;
-
   border-radius:15px;
-
   box-shadow:0 5px 20px rgba(0,0,0,0.3);
 }
 
-/* ENCABEZADO */
-
+/* ENCABEZADO TU CÓDIGO BASE */
 .encabezado{
   display:flex;
   justify-content:space-between;
   align-items:center;
   flex-wrap:wrap;
-
   border-bottom:3px solid #0b4f8a;
-
   padding-bottom:15px;
-
   margin-bottom:20px;
 }
 
@@ -65,17 +127,12 @@ body{
   height:auto;
 }
 
-/* NUEVO: PANEL DOCENTE */
-
+/* PANEL DOCENTE TU CÓDIGO BASE */
 .info-docente{
   background:white;
-
   padding:20px;
-
   border-radius:12px;
-
   margin-bottom:20px;
-
   box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
 
@@ -87,15 +144,11 @@ body{
   width:100%;
 }
 
-/* INFORMACIÓN */
-
+/* INFORMACIÓN TU CÓDIGO BASE */
 .info-materia{
   background:#eaf3ff;
-
   padding:15px;
-
   border-radius:10px;
-
   margin-bottom:20px;
 }
 
@@ -103,24 +156,17 @@ body{
   margin:5px 0;
 }
 
-/* INPUTS */
-
+/* INPUTS TU CÓDIGO BASE */
 input{
   width:100%;
-
   padding:12px;
-
   margin-bottom:12px;
-
   border:1px solid #ccc;
-
   border-radius:8px;
-
   box-sizing:border-box;
 }
 
-/* BOTONES */
-
+/* BOTONES TU CÓDIGO BASE */
 .botones{
   display:flex;
   gap:10px;
@@ -129,17 +175,11 @@ input{
 
 button{
   padding:12px 20px;
-
   border:none;
-
   border-radius:8px;
-
   cursor:pointer;
-
   font-weight:bold;
-
   background:#0b4f8a;
-
   color:white;
 }
 
@@ -156,30 +196,23 @@ button:hover{
   padding:8px 15px;
 }
 
-/* CONTADOR */
-
+/* CONTADOR TU CÓDIGO BASE */
 #contador{
   color:#0b4f8a;
 }
 
-/* TABLA */
-
+/* TABLA TU CÓDIGO BASE */
 table{
   width:100%;
-
   border-collapse:collapse;
-
   margin-top:20px;
-
   background:white;
 }
 
 th,
 td{
   border:1px solid #ccc;
-
   padding:10px;
-
   text-align:center;
 }
 
