@@ -168,6 +168,12 @@
 
   </table>
 
+  <div class="contenedor-excel" id="contenedorBtnExcel" style="display: none;">
+    <button class="btn-excel" onclick="exportarExcelAsistencias()">
+      📊 Exportar Reporte a Excel
+    </button>
+  </div>
+
 </div>
 
 <script>
@@ -209,7 +215,6 @@ function cargarDatosIniciales() {
   verificarYActivarCronometroExistente();
 }
 
-// NUEVO: Regresar al menú principal (Ambos perfiles)
 function regresarAlMenu() {
   clearInterval(cuentaRegresivaInterval);
   document.getElementById("contenedor-principal").style.display = "none";
@@ -287,7 +292,6 @@ function iniciarSesion() {
     document.getElementById("pantalla-acceso").style.display = "none";
     document.getElementById("contenedor-principal").style.display = "block";
 
-    // Recargar datos actualizados compartidos entre perfiles
     asistenciaGlobal = JSON.parse(localStorage.getItem("asistencia_global")) || [];
     configuracionClase = JSON.parse(localStorage.getItem("config_clase")) || configuracionClase;
     cargarDatosIniciales();
@@ -297,11 +301,13 @@ function iniciarSesion() {
       document.getElementById("campos-identificacion-alumno").style.display = "none";
       document.getElementById("panelDocenteConfig").style.display = "none";
       document.getElementById("btnLimpiarListaGeneral").style.display = "none";
+      document.getElementById("contenedorBtnExcel").style.display = "none"; 
     } else {
       alumnoLogueado = null;
       document.getElementById("campos-identificacion-alumno").style.display = "block";
       document.getElementById("panelDocenteConfig").style.display = "block";
       document.getElementById("btnLimpiarListaGeneral").style.display = "block";
+      document.getElementById("contenedorBtnExcel").style.display = "flex"; 
     }
 
     verificarBloqueosPaseLista();
@@ -312,7 +318,7 @@ function iniciarSesion() {
 }
 
 // ==========================================
-// TU CÓDIGO BASE ADAPTADO (SIN BORRAR ATRIBUTOS ANTERIORES)
+// TU CÓDIGO BASE ADAPTADO
 // ==========================================
 function registrarDocente(){
   let docente = document.getElementById("nombreDocente").value;
@@ -334,7 +340,6 @@ function registrarDocente(){
   document.getElementById("mostrarMateria").textContent = materia;
   document.getElementById("mostrarGrupo").textContent = grupo;
 
-  // Guardar configuración global para persistencia entre perfiles
   let ahora = new Date();
   let finTiempo = ahora.getTime() + (minutos * 60 * 1000);
 
@@ -400,7 +405,7 @@ function finalizarPorTiempo() {
   document.getElementById("cronometro").textContent = "00:00";
   let alerta = document.getElementById("alerta-sistema");
   alerta.textContent = "¡Tiempo terminado! El pase de lista se encuentra cerrado.";
-  alerta.style.className = "alerta-sistema alerta-roja";
+  alerta.className = "alerta-sistema alerta-roja";
   alerta.style.display = "block";
   document.getElementById("btnPasarLista").disabled = true;
 }
@@ -454,7 +459,6 @@ function pasarLista() {
     return;
   }
 
-  // Evitar duplicados del mismo alumno bajo la misma sesión
   let yaRegistrado = asistenciaGlobal.some(al => al.matricula === matricula);
   if (yaRegistrado) {
     alert("Esta matrícula ya registró su asistencia.");
@@ -499,7 +503,6 @@ function actualizarTablaYContador() {
     btnEliminar.textContent = "Eliminar";
     btnEliminar.classList.add("btnEliminar");
 
-    // Permitir eliminar solo si no es sesión estricta de alumno o si requiere mantenimiento
     btnEliminar.onclick = function () {
       asistenciaGlobal.splice(index, 1);
       localStorage.setItem("asistencia_global", JSON.stringify(asistenciaGlobal));
@@ -509,10 +512,9 @@ function actualizarTablaYContador() {
 
     celdaAccion.appendChild(btnEliminar);
     fila.appendChild(celdaAccion);
-    cuerpoTabla.appendChild(fila);
+    cuerpoTabla.appendChild(fila); 
   });
 
-  // Actualización del formato solicitado: pases disponibles / registrados
   document.getElementById("contador").textContent = 
     "Pases de lista disponibles: " + asistenciaGlobal.length + " / " + limiteAlumnosMax + " registrados";
 }
@@ -524,6 +526,11 @@ function limpiarLista() {
   document.getElementById("alerta-sistema").style.display = "none";
   document.getElementById("btnPasarLista").disabled = false;
   paseCerradoPorLimite = false;
+}
+
+// Función temporal para la acción de exportar
+function exportarExcelAsistencias() {
+  alert("¡Estructura lista! En el siguiente paso programaremos la descarga real del Excel.");
 }
 </script>
 

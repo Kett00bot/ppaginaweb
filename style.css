@@ -18,7 +18,7 @@ body{
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("fondologin.png"); /* Se cambió el nombre de la imagen aquí */
+  background-image: url("fondologin.png"); 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -223,4 +223,34 @@ th{
 
 tr:nth-child(even){
   background:#f5f5f5;
+}
+
+/* ESTILOS PARA EL BOTÓN DE EXCEL */
+.contenedor-excel {
+  display: flex;
+  justify-content: flex-end; 
+  margin-top: 20px;
+  width: 100%;
+}
+
+.btn-excel {
+  background-color: #1f7246; 
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-excel:hover {
+  background-color: #155231; 
+  opacity: 1; 
+}
+
+.btn-excel:active {
+  transform: scale(0.98); 
 }
